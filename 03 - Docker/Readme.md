@@ -7,7 +7,9 @@ This practice is about virtualization and Docker. This folder contains a Dockerf
 ## About the Dockerfile
 
 ```FROM``` - the image is initiated from a pre-created image (in this case, it is Ubuntu 18.04)
+
 ```RUN``` - the Linux commands after ```RUN``` statements are executed while creating the images
+
 ```CMD``` - only one ```CMD``` statement can be in a Dockerfile. It needs a Linux command as well, but this command is executed only, when you start a container instance from your existing Docker image.
 
 ## Building the Dockerfile
