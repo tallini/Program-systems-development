@@ -32,7 +32,7 @@ $ docker run -itd my-first-image
 
 - ```-i``` option is for making the container interactive (in order to connect to it later via Terminal)
 - ```-t``` option is for attaching a Pseudo terminal (TTY) to the container (in order to connect to it later via Terminal)
-- ```d``` option is for running the container in the background (in this case, the current terminal can be used for running other processes)
+- ```-d``` option is for running the container in the background (in this case, the current terminal can be used for running other processes)
 
 ### Author
 Zoltán R. Jánki (jankiz@inf.u-szeged.hu)
