@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
 	res.status(404).send('This is not an available route, please try /promise or /observable.');
 })
 
-app.get('/promise', (req, res) => {
+app.get('/promise', async (req, res) => {
 	let myClass = new MainClass();
 	res.setHeader('Content-Type', 'text/html; charset=UTF-8');
 	res.setHeader('Transfer-Encoding', 'chunked');
@@ -20,6 +20,17 @@ app.get('/promise', (req, res) => {
 		res.write(error);
 		res.status(404).end();
 	});
+
+	/*
+	// async-await (same as Promise above)
+    try {
+        const data = await myClass.greetingPromise();
+        res.write(data);
+        res.status(200).end();
+    } catch (error: any) {
+        res.write(error);
+        res.status(404).end();
+    } */
 });
 
 app.get('/observable', (req, res) => {
