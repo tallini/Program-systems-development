@@ -2,45 +2,52 @@ import { Observable, Subscriber } from 'rxjs';
 
 export class MainClass {
 
-    securityThreshold = 70;
+    availabilityThreshold: number = 30;
 
     constructor() {
-        console.log('It works');
+        console.log('Constructor called.');
     }
 
-    greeting() {
-        return "Please use /promise or /observable.";
+    // callback
+    // Promise
+    // Observable
+
+    monitoringCallback(callback: (error: string | null, result?: string) => void): void {
+        setTimeout(() => {
+            const randAvailability = Math.random() * 100;
+            if (randAvailability >= this.availabilityThreshold) {
+                callback(null, 'Successful request, availability is: ' + randAvailability.toString() + '%');
+            } else {
+                callback('Error: availability is only ' + randAvailability.toString() + '%');
+            }
+        }, 3000);
     }
 
-    // Promise, Observable (reactive programming), (callback)
-
-    greetingPromise(): Promise<string> {
+    monitoringPromise(): Promise<string> {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 const randAvailability = Math.random() * 100;
-                if (randAvailability < this.securityThreshold) {
-                    reject('Error: availability is ' + randAvailability.toString() + '%');
-                } else {
+                if (randAvailability >= this.availabilityThreshold) {
                     resolve('Successful request, availability is: ' + randAvailability.toString() + '%');
+                } else {
+                    reject('Error: availability is only ' + randAvailability.toString() + '%');
                 }
-            }, 2000);
+            }, 3000);
         });
     }
 
-    greetingObservable(): Observable<string> {
-        let counter = 0;
+    monitoringObservable(): Observable<string> {
         return new Observable((subscriber: Subscriber<string>) => {
-            subscriber.next('Waiting for response from database...\n');
+            let counter = 0;
             const interval = setInterval(() => {
                 const randAvailability = Math.random() * 100;
-                if (randAvailability < this.securityThreshold) {
-                    subscriber.error('Error: availability is ' + randAvailability.toString() + '%');
-                } else {
+                if (randAvailability >= this.availabilityThreshold) {
                     subscriber.next('Successful request, availability is: ' + randAvailability.toString() + '%');
+                } else {
+                    subscriber.error('Error: availability is only ' + randAvailability.toString() + '%');
                 }
                 counter++;
-                console.log(counter);
-                if (counter == 5) {
+                if (counter === 5) {
                     clearInterval(interval);
                     subscriber.complete();
                 }
