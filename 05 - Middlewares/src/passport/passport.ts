@@ -3,7 +3,6 @@ import { Strategy } from 'passport-local';
 import { User } from '../model/User';
 
 export const configurePassport = (passport: PassportStatic): PassportStatic => {
-
     passport.serializeUser((user: Express.User, done) => {
         console.log('user is serialized.');
         done(null, user);
@@ -14,13 +13,16 @@ export const configurePassport = (passport: PassportStatic): PassportStatic => {
         done(null, user);
     });
 
-    passport.use('local', new Strategy((username, password, done) => {
-        if (username === 'test@test.com' && password === 'testpw') {
-            done(null, new User(username, password));
-        } else {
-            done('Incorrect username or password.');
-        }
-    }));
+    passport.use(
+        'local',
+        new Strategy((username, password, done) => {
+            if (username === 'test@test.com' && password === 'testpw') {
+                done(null, new User(username, password));
+            } else {
+                done('Incorrect username or password.');
+            }
+        })
+    );
 
     return passport;
-}
+};
