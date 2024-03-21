@@ -1,19 +1,20 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { AComponentComponent } from './a-component/a-component.component';
+import { BComponentComponent } from './b-component/b-component.component';
+import { LoginComponent } from './login/login.component';
 
-// Decorators
 @Component({
-  selector: 'app-root', // HTML tag
-  // template: '<h1>HELLO!</h1>',
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet,
+    AComponentComponent,
+    BComponentComponent,
+    LoginComponent
+  ],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'my-project';
-
-  myObject: any = {};
-
-  constructor() {
-    // tslint:disable-next-line:no-string-literal
-    this.myObject['title'] = this.title;
-  }
+  title = 'my-first-project test';
 }
