@@ -1,56 +1,70 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
-
-export const UserSchema = new mongoose.Schema({
-    email: String,
-    password: String
-});
-
-export interface IUser extends mongoose.Document {
-    email: string;
-    password: string;
-}
 
 const SALT_FACTOR = 10;
 
-UserSchema.pre('save', function preSaveCallback(next) {
-    const _this = this as any;
+interface IUser extends Document {
+    email: string;
+    name?: string;
+    address?: string;
+    nickname?: string;
+    password: string;
+    comparePassword: (candidatePassword: string, callback: (error: Error | null, isMatch: boolean) => void) => void;
+}
 
-    bcrypt.genSalt(SALT_FACTOR, function genSaltCallback(error, salt) {
+const UserSchema: Schema<IUser> = new mongoose.Schema({
+    email: { type: String, required: true },
+    name: { type: String, required: false },
+    address: { type: String, required: false },
+    nickname: { type: String, required: false },
+    password: { type: String, required: true }
+});
+
+// hook
+UserSchema.pre<IUser>('save', function(next) {
+    const user = this;
+    
+    // hash password
+    bcrypt.genSalt(SALT_FACTOR, (error, salt) => {
         if (error) {
             return next(error);
         }
-
-        bcrypt.hash(_this.password, salt, function hashCallback(error2, hash) {
-            if (error2) {
-                return next(error2);
+        bcrypt.hash(user.password, salt, (err, encrypted) => {
+            if (err) {
+                return next(err);
             }
-            _this.password = hash;
+            user.password = encrypted;
             next();
         });
     });
 });
 
-UserSchema.methods.comparePassword = function comparePassword(password, cb) {
-    const _this = this as any;
-    bcrypt.compare(password, _this.password, function compareCallback(error, isMatch) {
+UserSchema.methods.comparePassword = function(candidatePassword: string, callback: (error: Error | null, isMatch: boolean) => void): void {
+    const user = this;
+    bcrypt.compare(candidatePassword, user.password, (error, isMatch) => {
         if (error) {
-            return cb(error);
+            callback(error, false);
         }
-        cb(null, isMatch);
+        callback(null, isMatch);
     });
 }
 
-export const User: mongoose.Model<IUser> = mongoose.model<IUser>('User', UserSchema);
+export const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 
-/* export class User {
+/* THIS - JS - runtime binding
+// explanation for this:
+const test = {
+    prop: 1,
+    func: () => {
+      return test.prop;
+    },
+};
 
-    email: string;
-    password: string;
+const test = {
+    prop: 1,
+    func: function() {
+        return this.prop;
+    },
+};
 
-    constructor(email: string, password: string) {
-        this.email = email;
-        this.password = password;
-    }
-
-} */
+// Expected output: 1 */
